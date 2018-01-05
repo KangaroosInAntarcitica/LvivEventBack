@@ -28,6 +28,9 @@ class Users(db.Model):
         self.pw_hash = pw_hash
         self.uuid = str(uuid4())
 
+@app.route('/', methods=['GET'])
+def default():
+    return('This is the default webpage. Here is your request: ' + request.json)
 
 @app.route("/register", methods=["POST"])
 def register():
