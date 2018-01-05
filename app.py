@@ -30,7 +30,7 @@ class Users(db.Model):
 
 @app.route('/', methods=['GET'])
 def default():
-    return('This is the default webpage. Here is your request: ' + request.json)
+    return('This is the default webpage. Here is your request: ' + request)
 
 @app.route("/register", methods=["POST"])
 def register():
