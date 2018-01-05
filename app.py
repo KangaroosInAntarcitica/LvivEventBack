@@ -21,6 +21,9 @@ class Users(db.Model):
         self.email = email
         self.password = password
 
+@app.route("/", methods=["GET"])
+def default():
+    return("This is the default page. Please use '/register' for functionality")
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
