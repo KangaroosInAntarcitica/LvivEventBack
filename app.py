@@ -30,12 +30,12 @@ class Users(db.Model):
 
 @app.route('/', methods=['GET'])
 def default():
-    return('This is the default webpage. Here is your request: ' + request)
+    return('This is the default webpage. Here is your request: ' + str(request))
 
 @app.route("/register", methods=["POST"])
 def register():
     print(request.json)
-    print(resuest.json["username"])
+    print(request.json["username"])
     username = request.json["username"]
     email = request.json["email"]
     pw_hash = generate_password_hash(request.json["password"])
