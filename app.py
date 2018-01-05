@@ -7,7 +7,7 @@ db = SQLAlchemy(app)
 
 @app.route('/')
 def index():
-    return 'OK'
+    return 'All working'
 
 if __name__ == '__main__':
     app.run()
