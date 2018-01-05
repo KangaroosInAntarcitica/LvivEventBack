@@ -1,43 +1,46 @@
 from flask import Flask, render_template, request, url_for, redirect, \
     json, jsonify
 from flask_sqlalchemy import SQLAlchemy
+from uuid import uuid4
+from werkzeug.security import generate_password_hash, \
+    check_password_hash
 import os
 
 app = Flask(__name__)
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
+
 class Users(db.Model):
-    tablename = 'users'
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.Text, unique=True)
     email = db.Column(db.Text, unique=True)
-    password = db.Column(db.Text)
+    pw_hash = db.Column(db.Text)
+    uuid = db.Column(db.Text, unique=True)
 
-    def init(self, username, email, password):
+    def __init__(self, username, email, pw_hash):
         self.username = username
         self.email = email
-        self.password = password
+        self.pw_hash = pw_hash
+        self.uuid = str(uuid4())
 
-@app.route("/", methods=["GET"])
-def default():
-    return("This is the default page. Please use '/register' for functionality")
 
-@app.route("/register", methods=["GET", "POST"])
+@app.route("/register", methods=["POST"])
 def register():
-    if request.method == "GET":
-        return render_template("register.html")
-    elif request.method == "POST":
-        _username = request.json["username"]
-        _email = request.json["email"]
-        _password = request.json["password"]
-        if _username and _email and _password:
-            new_user = Users(_username, _email, _password)
-            db.session.add(new_user)
-            db.session.commit()
-        return render_template("success.html")
+    username = request.json["username"]
+    email = request.json["email"]
+    pw_hash = generate_password_hash(request.json["password"])
+    if username and email and pw_hash:
+        new_user = Users(username, email, pw_hash)
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify(status="success")
+    else:
+        return jsonify(status="failure")
 
 
 @app.route("/login", methods=["POST"])
@@ -46,7 +49,7 @@ def login():
     password = request.json["password"]
     user = Users.query.filter_by(username=username).first()
     if user:
-        if user.password == password:
+        if check_password_hash(user.pw_hash, password):
             return jsonify(status="success")
         else:
             return jsonify(status="wrong password")
@@ -55,4 +58,4 @@ def login():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
