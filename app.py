@@ -31,6 +31,7 @@ class Users(db.Model):
 
 @app.route("/register", methods=["POST"])
 def register():
+    print(request)
     username = request.json["username"]
     email = request.json["email"]
     pw_hash = generate_password_hash(request.json["password"])
