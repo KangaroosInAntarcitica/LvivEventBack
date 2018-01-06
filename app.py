@@ -34,8 +34,6 @@ def default():
 
 @app.route("/register", methods=["POST"])
 def register():
-    print(request.json)
-    print(request.json["username"])
     username = request.json["username"]
     email = request.json["email"]
     pw_hash = generate_password_hash(request.json["password"])
@@ -50,8 +48,12 @@ def register():
 
 @app.route("/login", methods=["POST"])
 def login():
+
+    print("A post request to login was made")
     username = request.json["username"]
     password = request.json["password"]
+    print("Username:", username, "\t - Password:", password)
+    
     user = Users.query.filter_by(username=username).first()
     if user:
         if check_password_hash(user.pw_hash, password):
