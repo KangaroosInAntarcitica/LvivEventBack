@@ -48,7 +48,7 @@ def register():
 
     email = request.json["email"]
     # validate email
-    if not re.match(r"[^@]+@[^@]+\.[^@]+", email)
+    if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
         return jsonify(status="wrong e-mail format")
     if Users.query.filter_by(email=email).first():
         return jsonify(status="e-mail unavailable")
