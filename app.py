@@ -8,6 +8,7 @@ import os
 from string import ascii_letters, digits
 import re
 
+
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -78,9 +79,9 @@ def login():
         if check_password_hash(user.pw_hash, password):
             return jsonify(status="success")
         else:
-            return jsonify(status="wrong password")
+            return jsonify(status="wrong details")
     else:
-        return jsonify(status="wrong username")
+        return jsonify(status="wrong details")
 
 
 if __name__ == '__main__':
