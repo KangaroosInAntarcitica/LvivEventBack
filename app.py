@@ -93,8 +93,8 @@ class Events(db.Model):
     __tablename__ = 'events'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(128), unique=True)
-    startdate = db.Column(db.DateTime)
-    enddate = db.Column(db.dateTime)
+    startdate = db.Column(db.Date)
+    enddate = db.Column(db.Date)
     image = db.Column(db.Text)
     description = db.Column(db.Text)
     address = db.Column(db.Text)
