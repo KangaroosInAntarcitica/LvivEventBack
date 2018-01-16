@@ -8,6 +8,8 @@ import os
 from string import ascii_letters, digits
 import re
 
+from datetime import date
+
 
 app = Flask(__name__)
 
@@ -103,13 +105,13 @@ class Events(db.Model):
 
     def __init__(self, data):
         self.name = data['username']
-        self.startdate = data['startdate']
-        self.enddate = ['enddate']
-        self.image = ['image']
-        self.description = ['description']
-        self.address = ['address']
-        self.transfer = ['transfer']
-        self.timetable = ['timetable']
+        self.startdate = date(map(int, data['startdate'].split('-')))
+        self.enddate = date(map(int, data['enddate'].split('-')))
+        self.image = data['image']
+        self.description = data['description']
+        self.address = data['address']
+        self.transfer = data['transfer']
+        self.timetable = data['timetable']
 
 @app.route("/events", methods=["GET"])
 def get_events():
