@@ -39,6 +39,9 @@ def default():
 
 @app.route("/register", methods=["POST"])
 def register():
+    print("A post request to register was made")
+    print("The details are: ", request.json)
+
     username = request.json["username"]
     # validate username
     if (not 0 < len(username) < 11) or \
@@ -68,11 +71,11 @@ def register():
 
 @app.route("/login", methods=["POST"])
 def login():
-
     print("A post request to login was made")
+    print("The details are: ", request.json)
+
     username = request.json["username"]
     password = request.json["password"]
-    print("Username:", username, "\t - Password:", password)
 
     user = Users.query.filter_by(username=username).first()
     if user:
@@ -82,6 +85,45 @@ def login():
             return jsonify(status="wrong details")
     else:
         return jsonify(status="wrong details")
+
+# EVENTS PART
+# TODO make a separate file for different functions
+
+class Events(db.Model):
+    __tablename__ = 'events'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), unique=True)
+    startdate = db.Column(db.DateTime)
+    enddate = db.Column(db.dateTime)
+    image = db.Column(db.Text)
+    description = db.Column(db.Text)
+    address = db.Column(db.Text)
+    transfer = db.Column(db.Text)
+    timetable = db.Column(db.Text)
+
+    def __init__(self, data):
+        self.name = data['username']
+        self.startdate = data['startdate']
+        self.enddate = ['enddate']
+        self.image = ['image']
+        self.description = ['description']
+        self.address = ['address']
+        self.transfer = ['transfer']
+        self.timetable = ['timetable']
+
+@app.route("/events", methods=["GET"])
+def get_events():
+    events = Events.query.all()
+    return jsonify(events)
+
+@app.route("/newEvent", methods=["POST"])
+def post_event():
+    data = request.json
+
+    new_event = Events(data)
+    db.session.add(new_event)
+    db.session.commit()
+    return jsonify(status="success")
 
 
 if __name__ == '__main__':
