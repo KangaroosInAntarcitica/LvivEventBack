@@ -117,7 +117,18 @@ class Events(db.Model):
 
 @app.route("/events", methods=["GET"])
 def get_events():
-    events = Events.query.all()
+    def parse_event(event):
+        return {
+            'name': event.name,
+            'enddate': event.enddate,
+            'startdate': event.startdate,
+            'image': event.image,
+            'address': event.address,
+            'transfer': event.transfer,
+            'timetable': event.timetable
+        }
+
+    events = map(parse_event, Events.query.all())
     return jsonify(events)
 
 @app.route("/newEvent", methods=["POST"])
