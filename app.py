@@ -130,9 +130,8 @@ def get_events():
             'timetable': event.timetable
         }
 
-    events = map(parse_event, Events.query.all())
-    print(events)
-    return events
+    events = list(map(parse_event, Events.query.all()))
+    return jsonify(events)
 
 @app.route("/newEvent", methods=["POST"])
 def post_event():
