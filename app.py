@@ -104,14 +104,18 @@ class Events(db.Model):
     timetable = db.Column(db.Text)
 
     def __init__(self, data):
-        self.name = data['username']
-        self.startdate = date(map(int, data['startdate'].split('-')))
-        self.enddate = date(map(int, data['enddate'].split('-')))
-        self.image = data['image']
-        self.description = data['description']
-        self.address = data['address']
-        self.transfer = data['transfer']
-        self.timetable = data['timetable']
+        self.name = data['name']
+
+        self.startdate = date(map(int, data['startdate'].split('-'))) \
+         if 'startdate' in data else None
+        self.enddate = date(map(int, data['enddate'].split('-'))) \
+         if 'enddate' in data else None
+
+        self.image = data['image'] if 'image' in data else None
+        self.description = data['description'] if 'description' in data else None
+        self.address = data['address'] if 'address' in data else None
+        self.transfer = data['transfer'] if 'transfer' in data else None
+        self.timetable = data['timetable'] if 'timetable' in data else None
 
 @app.route("/events", methods=["GET"])
 def get_events():
