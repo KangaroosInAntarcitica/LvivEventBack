@@ -106,10 +106,8 @@ class Events(db.Model):
     def __init__(self, data):
         self.name = data['name']
 
-        self.startdate = date(map(int, data['startdate'].split('-'))) \
-         if 'startdate' in data else None
-        self.enddate = date(map(int, data['enddate'].split('-'))) \
-         if 'enddate' in data else None
+        self.startdate = date(map(int, data['startdate'].split('-')))
+        self.enddate = date(map(int, data['enddate'].split('-')))
 
         self.image = data['image'] if 'image' in data else None
         self.description = data['description'] if 'description' in data else None
