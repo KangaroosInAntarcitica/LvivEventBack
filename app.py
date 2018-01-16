@@ -131,8 +131,8 @@ def get_events():
         }
 
     events = map(parse_event, Events.query.all())
-    print(jsonify(events))
-    return jsonify(events)
+    print(events)
+    return events
 
 @app.route("/newEvent", methods=["POST"])
 def post_event():
