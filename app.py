@@ -122,8 +122,8 @@ def get_events():
     def parse_event(event):
         return {
             'name': event.name,
-            'enddate': event.enddate,
-            'startdate': event.startdate,
+            'enddate': str(event.enddate),
+            'startdate': str(event.startdate),
             'image': event.image,
             'address': event.address,
             'transfer': event.transfer,
