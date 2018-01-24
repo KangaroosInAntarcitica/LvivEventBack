@@ -18,6 +18,7 @@ def parse_event(event):
         'startdate': str(event.startdate),
         'image': event.image,
         'address': event.address,
+        'description': event.description,
         'transfer': event.transfer,
         'timetable': event.timetable
     }
