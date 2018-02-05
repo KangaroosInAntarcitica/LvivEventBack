@@ -1,55 +1,25 @@
 from flask import Flask, render_template, request, url_for, redirect, \
     json, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from uuid import uuid4
 from werkzeug.security import generate_password_hash, \
     check_password_hash
 import os
 from string import ascii_letters, digits
 import re
-
-from datetime import date
-
-
-def parse_event(event):
-    return {
-        'name': event.name,
-        'enddate': str(event.enddate),
-        'startdate': str(event.startdate),
-        'image': event.image,
-        'address': event.address,
-        'description': event.description,
-        'transfer': event.transfer,
-        'timetable': event.timetable
-    }
+from models import Users, Events, parse_event
 
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 db = SQLAlchemy(app)
 
 
-class Users(db.Model):
-    __tablename__ = 'users'
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.Text, unique=True)
-    email = db.Column(db.Text, unique=True)
-    pw_hash = db.Column(db.Text)
-    uuid = db.Column(db.Text, unique=True)
-
-    def __init__(self, username, email, pw_hash):
-        self.username = username
-        self.email = email
-        self.pw_hash = pw_hash
-        self.uuid = str(uuid4())
-
-
 @app.route('/', methods=['GET'])
 def default():
-    return('This is the default webpage. Here is your request: ' + str(request))
+    return 'This is the default webpage. Here is your request: ' + str(request)
 
 
 @app.route("/register", methods=["POST"])
@@ -102,32 +72,6 @@ def login():
 # TODO make a separate file for different functions
 
 
-class Events(db.Model):
-    __tablename__ = 'events'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(128), unique=True)
-    startdate = db.Column(db.Date)
-    enddate = db.Column(db.Date)
-    image = db.Column(db.Text)
-    description = db.Column(db.Text)
-    address = db.Column(db.Text)
-    transfer = db.Column(db.Text)
-    timetable = db.Column(db.Text)
-
-    def __init__(self, data):
-        self.name = data['name']
-
-        self.startdate = date(*map(int, data['startdate'].split('-')))
-        self.enddate = date(*map(int, data['enddate'].split('-'))) \
-            if 'enddate' in data else self.startdate
-
-        self.image = data['image'] if 'image' in data else None
-        self.description = data['description'] if 'description' in data else None
-        self.address = data['address'] if 'address' in data else None
-        self.transfer = data['transfer'] if 'transfer' in data else None
-        self.timetable = data['timetable'] if 'timetable' in data else None
-
-
 @app.route("/events", methods=["GET"])
 def get_events():
     print("A get request to events was made")
@@ -141,7 +85,6 @@ def post_event():
     print("A post request to newEvent was made")
 
     data = request.json
-
     new_event = Events(data)
     db.session.add(new_event)
     db.session.commit()
@@ -149,7 +92,7 @@ def post_event():
 
 
 @app.route("/getEvent/<event_name>")
-def getEvent(event_name):
+def get_event(event_name):
     event = Events.query.filter_by(name=event_name).first()
     if event:
         return jsonify(parse_event(event))
