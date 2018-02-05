@@ -1,12 +1,13 @@
 from flask import Flask, render_template, request, url_for, redirect, \
     json, jsonify
+from flask_login import LoginManager, login_user, logout_user, login_required
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, \
     check_password_hash
 import os
 from string import ascii_letters, digits
 import re
-from models import Users, Events, parse_event
+
 
 
 app = Flask(__name__)
@@ -14,8 +15,13 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
+app.config['SECRET_KEY'] = 'badmotherfucker'
 db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
+
+from models import Users, Events, parse_event
 
 @app.route('/', methods=['GET'])
 def default():
@@ -54,6 +60,11 @@ def register():
     return jsonify(status="success")
 
 
+@login_manager.user_loader
+def load_user(user_id):
+    return Users.query.get(int(user_id))
+
+
 @app.route("/login", methods=["POST"])
 def login():
     print("A post request to login was made")
@@ -63,10 +74,18 @@ def login():
     password = request.json["password"]
 
     user = Users.query.filter_by(username=username).first()
-    if (user and check_password_hash(user.pw_hash, password)):
+    if user and check_password_hash(user.pw_hash, password):
+        login_user(user)
         return jsonify(status="success")
     else:
         return jsonify(status="wrong e-mail or password")
+
+
+@app.route('/logout')
+def logout():
+    print('Logging out...')
+    logout_user()
+    return jsonify(status='successfully logged out')
 
 # EVENTS PART
 # TODO make a separate file for different functions
@@ -92,6 +111,7 @@ def post_event():
 
 
 @app.route("/getEvent/<event_name>")
+@login_required
 def get_event(event_name):
     event = Events.query.filter_by(name=event_name).first()
     if event:

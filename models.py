@@ -1,6 +1,7 @@
 from app import db
 from datetime import date
 from uuid import uuid4
+from flask_login import UserMixin
 
 
 def parse_event(event):
@@ -16,7 +17,7 @@ def parse_event(event):
     }
 
 
-class Users(db.Model):
+class Users(UserMixin, db.Model):
     """Class representing user in database"""
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
